@@ -2,142 +2,264 @@
 <html>
 
 <head>
-  <title></title>
-  <meta charset="utf-8">
-  <!-- Responsive -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <!-- End Responsive -->
-  <link rel="stylesheet" href="css/bootstrap.min.css">
-  <link rel="stylesheet" href="css/font-awesome.min.css">
-  <link rel="stylesheet" href="css/nouislider.min.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no" />
+  <title>Wrappers</title>
 
-  <link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/themes/calcite/dijit/calcite.css">
-  <link rel="stylesheet" href="https://js.arcgis.com/3.27/esri/themes/calcite/esri/esri.css">
-  <!-- Load any application specific styles -->
-  <link rel="stylesheet" href="css/swiper.min.css">
-  <link rel="stylesheet" href="css/main.min.css">
-</head>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.18/esri/themes/light/main.css" />
+  <script src="https://js.arcgis.com/4.18/"></script>
 
-<body class="calcite app-loading">
-  <div class="loading-indicator">
-    <div class="loading-message" id="loading_message"></div>
-  </div>
-  <div class="container-fluid">
-    <div class="row container-row">
-      <div id="sidebar" class="hidden-xs col-sm-4 fgcolor">
-        <div class="row title-row">
-          <h1 id="panelTitle" class="repeat-title"></h1>
-          <!--class="hide"-->
-          <toolbar id="toolbar">
-            <span id="socialToolbar" class="social-icons hide">
-              <button id="facebookShare" type="button" class="btn btn-link share-btn nav-btn">
-                <span id="facebook" class="fa fa-facebook-official" aria-hidden="true"></span>
-              </button>
-              <button id="twitterShare" type="button" class="btn btn-link share-btn nav-btn">
-                <span id="twitter" class="fa fa-twitter" aria-hidden="true"></span>
-              </button>
-              <button id="linkShare" type="button" class="btn btn-link share-btn nav-btn">
-                <span class="fa fa-link" aria-hidden="true"></span>
-              </button>
-            </span>
-            <!--btn-link -->
-            <button id="toggleInfo" type="button" class="hide btn btn-link info-btn nav-btn">
-              <span class="fa esri-icon-description" aria-hidden="true"></span>
-            </button>
-          </toolbar>
-        </div>
-        <!--end row-->
-        <div id="titleHeader" class="title-header panel-nav">
-          <div id="description-text">
-            <div id="description"></div>
-            <div id="legendDiv"></div>
-          </div>
-          <div class="closeNav">
-            <button id="closeInfo" type="button" class="btn btn-default btn-lg disabled  btn-block">
-            </button>
-          </div>
-        </div>
-        <div id="popupContainer" class="swiper-container panel-nav">
-          <div id="slideWrapper" class="swiper-wrapper swiper-wrapper-horizontal">
-            <!--https://github.com/nolimits4web/swiper/-->
-          </div>
-        </div>
-        <nav id="slideNav" class="navbar-fixed-bottom hide panel-nav">
-          <button id="next" class="swiper-button-next navcolor esri-icon-right"></button>
-          <div id="pageLabel" class="swiper-pagination-label navcolor"></div>
-          <div class="swiper-pagination navcolor"></div>
-          <button id="prev" class="swiper-button-prev navcolor esri-icon-left"></button>
-        </nav>
-
-
-
-      </div>
-      <!--End Sidebar-->
-      <div class="col-xs-12 col-sm-8 map-container">
-        <div id="mapDiv"></div>
-      </div>
-    </div>
-  </div>
-  <script type="text/javascript">
-    var webgl = location.search.match(/webgl=([\w-]+)/) ? (RegExp.$1).toLowerCase() === "false" ? 0 : 1 : 1;
-    var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-    var dojoConfig = {
-      has: {
-        "esri-featurelayer-webgl": webgl
-      },
-      async: true,
-      // The locationPath logic below may look confusing but all its doing is
-      // enabling us to load the api from a CDN and load local modules from the correct location.
-      packages: [{
-        name: "application",
-        location: package_path + '/js'
-      }, {
-        name: "config",
-        location: package_path + '/config'
-      }, {
-        name: "arcgis_templates",
-        location: package_path + '/..'
-      }]
-    };
-    var urlLocale = location.search.match(/locale=([\w\-]+)/) ? RegExp.$1 : null;
-    if (urlLocale) {
-      dojoConfig.locale = urlLocale;
+  <style>
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+      margin: 0;
+      padding: 0;
     }
 
-  </script>
-  <script type="text/javascript" src="js/swiper.min.js"></script>
-  <script type="text/javascript" src="js/nouislider.min.js"></script>
-  <script type="text/javascript" src="https://js.arcgis.com/3.27/"></script>
+    .esri-popup--is-docked-top-right .esri-popup__main-container {
+      max-height: 100%;
+    }
 
-  <script type="text/javascript">
+    #appContainer {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+
+    #viewDiv {
+      flex: 1;
+      width: 100%;
+    }
+
+    .container {
+      display: flex;
+      flex: 1;
+      width: 100%;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 45px;
+      height: 22px;
+      vertical-align: middle;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      -webkit-transition: 0.4s;
+      transition: 0.4s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 1px;
+      background-color: white;
+      -webkit-transition: 0.4s;
+      transition: 0.4s;
+    }
+
+    input:checked+.slider {
+      background-color: #2196f3;
+    }
+
+    input:focus+.slider {
+      box-shadow: 0 0 1px #2196f3;
+    }
+
+    input:checked+.slider:before {
+      -webkit-transform: translateX(20px);
+      -ms-transform: translateX(20px);
+      transform: translateX(20px);
+    }
+
+    /* Rounded sliders */
+
+    .slider.round {
+      border-radius: 20px;
+    }
+
+    .slider.round:before {
+      border-radius: 50%;
+    }
+
+    .labelText {
+      padding-left: 5px;
+      font-size: 15px;
+    }
+
+    #mainDiv {
+      padding: 8px;
+    }
+
+  </style>
+
+  <script>
     require([
-      "config/templateConfig",
-      "application/template",
-      "application/main"
+      "esri/WebMap",
+      "esri/views/MapView",
+      "esri/layers/FeatureLayer",
+      "esri/widgets/FeatureTable",
+      "esri/core/watchUtils"
     ], function (
-      templateConfig,
-      Template,
-      Main
+      WebMap,
+      MapView,
+      FeatureLayer,
+      FeatureTable,
+      watchUtils
     ) {
-      // create the template. This will take care of all the logic required for template applications
-      var myTemplate = new Template(templateConfig);
-      // create my main application. Start placing your logic in the main.js file.
-      var myApp = new Main();
-      // start template
-      myTemplate.startup().then(function (config) {
-        // The config object contains the following properties: helper services, (optionally)
-        // i18n, appid, webmap and any custom values defined by the application.
-        // In this example we have one called theme.
-        myApp.startup(config);
-      }, function (error) {
-        // something went wrong. Let's report it.
-        myApp.reportError(error);
+      let selectedFeature, id;
+      const features = [];
+
+      const webmap = new WebMap({
+        portalItem: {
+          id: "284c90b4c9a34b7b98081c5ca705e0f4"
+        }
+      });
+
+      const view = new MapView({
+        map: webmap,
+        container: "viewDiv",
+        zoom: 3,
+        center: [-98, 38.5],
+        popup: {
+          dockEnabled: true,
+          dockOptions: {
+            buttonEnabled: false,
+            breakpoint: false
+          }
+        }
+      });
+
+      // When view is ready, find feature layer and set title and outFields
+      view.when(function () {
+        const featureLayer = webmap.findLayerById("OverlaySchools_2862");
+        featureLayer.title = "US Private school enrollment";
+        featureLayer.outFields = ["*"];
+
+        // Get references to div elements for toggling table visibility
+        const appContainer = document.getElementById("appContainer");
+        const tableContainer = document.getElementById("tableContainer");
+        const tableDiv = document.getElementById("tableDiv");
+
+        // Create FeatureTable
+        const featureTable = new FeatureTable({
+          view: view, // make sure to pass in view in order for selection to work
+          layer: featureLayer,
+          fieldConfigs: [{
+              name: "state_name",
+              label: "State",
+              direction: "asc"
+            },
+            {
+              name: "PercentagePrivate",
+              label: "Private school percentage"
+            },
+            {
+              name: "PercentagePublic",
+              label: "Public school percentage"
+            }
+          ],
+          container: tableDiv
+        });
+
+        // Add toggle visibility slider
+        view.ui.add(document.getElementById("mainDiv"), "top-right");
+
+        // Get reference to div elements
+        const checkboxEle = document.getElementById("checkboxId");
+        const labelText = document.getElementById("labelText");
+
+        // Listen for when toggle is changed, call toggleFeatureTable function
+        checkboxEle.onchange = function () {
+          toggleFeatureTable();
+        };
+
+        function toggleFeatureTable() {
+          // Check if the table is displayed, if so, toggle off. If not, display.
+          if (!checkboxEle.checked) {
+            appContainer.removeChild(tableContainer);
+            labelText.innerHTML =
+              "Show Feature Table";
+          } else {
+            appContainer.appendChild(tableContainer);
+            labelText.innerHTML =
+              "Hide Feature Table";
+          }
+        }
+
+        featureTable.on("selection-change", function (changes) {
+
+          // If row is unselected in table, remove it from the features array
+          changes.removed.forEach(function (item) {
+            const data = features.find(function (data) {
+              return data.feature === item.feature;
+            });
+          });
+
+          // If a row is selected, add to the features array
+          changes.added.forEach(function (item) {
+            const feature = item.feature;
+            features.push({
+              feature: feature
+            });
+
+            // Listen for row selection in the feature table. If the popup is open and a row is selected that is not the same feature as opened popup, close the existing popup.
+            if ((feature.attributes.OBJECTID !== id) && (view.popup.visible === true)) {
+              featureTable.deselectRows(selectedFeature);
+              view.popup.close();
+            }
+          });
+        });
+
+        // Watch for the popup's visible property. Once it is true, clear the current table selection and select the corresponding table row from the popup
+        watchUtils.watch(view.popup, "visible", (graphic) => {
+          selectedFeature = view.popup.selectedFeature;
+          if ((selectedFeature !== null) && (view.popup.visible !== false)) {
+            featureTable.clearSelection();
+            featureTable.selectRows(view.popup.selectedFeature);
+            id = selectedFeature.getObjectId();
+          }
+        });
       });
     });
 
   </script>
+</head>
+
+<body>
+  <div id="appContainer">
+    <div id="viewDiv"></div>
+    <div id="tableContainer" class="container">
+      <div id="tableDiv"></div>
+    </div>
+    <div id="mainDiv" class="esri-widget">
+      <label class="switch">
+        <input id="checkboxId" type="checkbox" checked="yes">
+        <span class="slider round"></span>
+      </label>
+      <label class="labelText" id="labelText">Hide feature table</label>
+    </div>
+  </div>
 </body>
 
 </html>
